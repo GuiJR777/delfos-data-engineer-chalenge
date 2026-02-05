@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pandas
+pyarrow
+requests
+sqlalchemy
+psycopg2-binary
+dagster
+dagster-webserver
