@@ -40,3 +40,6 @@ Thumbs.db
 
 # Dagster
 .dagster/
+
+# Seed info
+seed_info.json
