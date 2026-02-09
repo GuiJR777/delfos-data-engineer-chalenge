@@ -66,6 +66,53 @@ class TestDoLoad:
         session.commit.assert_called_once_with()
         session.close.assert_called_once_with()
 
+    def test_when_called_twice_should_delete_each_time(self):
+        # Arrange
+
+        session = MagicMock()
+        session_factory = MagicMock()
+        session_factory.get_session.return_value = session
+
+        loader = TargetDatabaseLoader(session_factory)
+        loader._get_signal_id_mapping = MagicMock(
+            return_value={"wind_speed_mean": 1}
+        )
+        loader._do_delete_existing = MagicMock()
+        loader._do_insert_batches = MagicMock(return_value=1)
+
+        points = [
+            AggregatedSignalPoint(
+                timestamp=datetime(2024, 1, 1, 0, 0, 0),
+                signal_name="wind_speed_mean",
+                value=1.0,
+            )
+        ]
+        day_start = datetime(2024, 1, 1, 0, 0, 0)
+        day_end = datetime(2024, 1, 2, 0, 0, 0)
+
+        # Act
+
+        loader.do_load(
+            aggregated_points=points,
+            day_start=day_start,
+            day_end=day_end,
+        )
+        loader.do_load(
+            aggregated_points=points,
+            day_start=day_start,
+            day_end=day_end,
+        )
+
+        # Assert
+
+        assert loader._do_delete_existing.call_count == 2
+        loader._do_delete_existing.assert_any_call(
+            session,
+            day_start,
+            day_end,
+            (1,),
+        )
+        assert loader._do_insert_batches.call_count == 2
 
 class TestGetSignalIdMapping:
     def test_when_all_signals_exist_should_return_mapping(self):

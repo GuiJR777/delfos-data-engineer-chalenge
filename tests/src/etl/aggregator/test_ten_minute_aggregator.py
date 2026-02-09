@@ -136,6 +136,108 @@ class TestDoAggregate:
             value=0.0,
         ) in result
 
+    def test_when_rows_span_two_windows_should_aggregate_each(
+        self,
+    ):
+        # Arrange
+
+        data_rows = [
+            {
+                "timestamp": "2024-01-01T00:00:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:01:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:02:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:03:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:04:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:05:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:06:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:07:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:08:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:09:00",
+                "wind_speed": 1.0,
+                "power": 2.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:10:00",
+                "wind_speed": 3.0,
+                "power": 4.0,
+            },
+            {
+                "timestamp": "2024-01-01T00:11:00",
+                "wind_speed": 3.0,
+                "power": 4.0,
+            },
+        ]
+        aggregator = TenMinuteAggregator()
+        first_window = datetime(2024, 1, 1, 0, 0, 0)
+        second_window = datetime(2024, 1, 1, 0, 10, 0)
+
+        # Act
+
+        result = aggregator.do_aggregate(
+            data_rows=data_rows,
+            signal_names=("wind_speed", "power"),
+        )
+
+        # Assert
+
+        assert len(result) == 16
+        assert AggregatedSignalPoint(
+            timestamp=first_window,
+            signal_name="wind_speed_mean",
+            value=1.0,
+        ) in result
+        assert AggregatedSignalPoint(
+            timestamp=first_window,
+            signal_name="power_mean",
+            value=2.0,
+        ) in result
+        assert AggregatedSignalPoint(
+            timestamp=second_window,
+            signal_name="wind_speed_mean",
+            value=3.0,
+        ) in result
+        assert AggregatedSignalPoint(
+            timestamp=second_window,
+            signal_name="power_mean",
+            value=4.0,
+        ) in result
+
 
 class TestGetFlatColumns:
     def test_when_multi_index_is_provided_should_flatten(self):

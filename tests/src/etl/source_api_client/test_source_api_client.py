@@ -120,6 +120,53 @@ class TestDoFetchPage:
 
         assert result == [{"timestamp": "2024-01-01T00:00:00"}]
 
+    def test_when_called_should_use_expected_params(
+        self,
+        monkeypatch,
+    ):
+        # Arrange
+
+        response = _build_response(
+            [{"timestamp": "2024-01-01T00:00:00"}]
+        )
+
+        http_client = MagicMock()
+        http_client.get.return_value = response
+
+        client_class = MagicMock(return_value=http_client)
+        monkeypatch.setattr(client_module.httpx, "Client", client_class)
+
+        client = SourceApiClient(
+            base_url="http://localhost",
+            timeout_seconds=1.0,
+            retry_attempts=1,
+            api_limit=10,
+            api_offset=0,
+        )
+
+        # Act
+
+        client._do_fetch_page(
+            start_timestamp="2024-01-01T00:00:00",
+            end_timestamp="2024-01-02T00:00:00",
+            signal_names=("wind_speed", "power"),
+            limit_value=123,
+            offset_value=7,
+        )
+
+        # Assert
+
+        http_client.get.assert_called_once_with(
+            client_module.API_DATA_PATH,
+            params={
+                "start": "2024-01-01T00:00:00",
+                "end": "2024-01-02T00:00:00",
+                "signals": ["wind_speed", "power"],
+                "limit": 123,
+                "offset": 7,
+            },
+        )
+
     def test_when_payload_is_not_list_should_raise_error(
         self,
         monkeypatch,
