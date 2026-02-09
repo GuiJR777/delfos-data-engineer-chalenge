@@ -50,16 +50,34 @@ services:
         condition: service_healthy
     ports:
       - "${API_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
-  # dagster:
-  #   # TODO: add build/image and env once Dagster is implemented
-  #   profiles: ["future"]
-  #   depends_on:
-  #     postgres_target:
-  #       condition: service_healthy
-  #   ports:
-  #     - "3000:3000"
+  dagster:
+    build:
+      context: ..
+      dockerfile: docker/dagster/Dockerfile
+    container_name: dagster
+    environment:
+      DAGSTER_HOME: /app/.dagster
+      API_BASE_URL: "http://source_api:8000"
+      TARGET_DATABASE_URL: "postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres_target:5432/${POSTGRES_TARGET_DB:-target_db}"
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres_target:
+        condition: service_healthy
+      source_api:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - dagster_home:/app/.dagster
 
 volumes:
   postgres_source_data:
   postgres_target_data:
+  dagster_home:
