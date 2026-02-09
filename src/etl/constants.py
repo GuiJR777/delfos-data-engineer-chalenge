@@ -1,0 +1,40 @@
+# Constantes do ETL.
+
+API_BASE_URL_ENV_NAME: str = "API_BASE_URL"
+API_TIMEOUT_SECONDS_ENV_NAME: str = "API_TIMEOUT_SECONDS"
+API_RETRY_ATTEMPTS_ENV_NAME: str = "API_RETRY_ATTEMPTS"
+API_LIMIT_ENV_NAME: str = "API_LIMIT"
+API_OFFSET_ENV_NAME: str = "API_OFFSET"
+LOG_LEVEL_ENV_NAME: str = "LOG_LEVEL"
+
+DEFAULT_API_BASE_URL: str = "http://localhost:8000"
+DEFAULT_API_TIMEOUT_SECONDS: float = 15.0
+DEFAULT_API_RETRY_ATTEMPTS: int = 2
+DEFAULT_API_LIMIT: int = 50_000
+DEFAULT_API_OFFSET: int = 0
+DEFAULT_LOG_LEVEL: str = "INFO"
+
+API_DATA_PATH: str = "/data"
+
+DATE_FORMAT: str = "%Y-%m-%d"
+TIMESTAMP_COLUMN_NAME: str = "timestamp"
+SIGNAL_NAME_COLUMN_NAME: str = "signal_name"
+VALUE_COLUMN_NAME: str = "value"
+
+SOURCE_SIGNAL_NAMES: tuple[str, ...] = (
+    "wind_speed",
+    "power",
+)
+
+AGGREGATION_FUNCTIONS: tuple[str, ...] = (
+    "mean",
+    "min",
+    "max",
+    "std",
+)
+
+RESAMPLE_WINDOW_MINUTES: int = 10
+RESAMPLE_WINDOW_SUFFIX: str = "min"
+
+DEFAULT_INSERT_BATCH_SIZE: int = 1000
+

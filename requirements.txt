@@ -4,6 +4,7 @@ python-dotenv
 pandas
 pyarrow
 requests
+httpx
 sqlalchemy
 psycopg2-binary
 dagster
