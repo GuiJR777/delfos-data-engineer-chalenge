@@ -130,8 +130,8 @@ class EtlRunnerFactory:
         api_client: SourceApiClient | None = None,
         engine_manager: TargetDatabaseEngineManager | None = None,
     ) -> EtlRunner:
-        target_settings = TargetDatabaseSettings()
         if engine_manager is None:
+            target_settings = TargetDatabaseSettings()
             engine_manager = TargetDatabaseEngineManager(
                 target_settings
             )
