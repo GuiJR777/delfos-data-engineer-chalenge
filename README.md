@@ -3,9 +3,11 @@ Delfos, com API FastAPI, ETL diário e orquestração via Dagster.
 Enunciado do desafio: [challenge/README.md](challenge/README.md)
 
 **Quick Start**
-1. `make up`
-2. `make seed SEED_ARGS="--truncate"`
-3. `make etl DATE=YYYY-MM-DD`
+1. `make setup`
+2. `make up`
+3. `make seed SEED_ARGS="--truncate"`
+4. `make etl DATE=YYYY-MM-DD`
+5. Use uma data dentro de `seed_info.json`
 
 **Arquitetura**
 ![Arquitetura](dev\image.png)
