@@ -4,6 +4,7 @@ Enunciado do desafio: [challenge/README.md](challenge/README.md)
 
 **Quick Start**
 1. `make setup`
+2. Copie `.env.sample` para `.env` e ajuste os valores
 2. `make up`
 3. `make seed SEED_ARGS="--truncate"`
 4. `make etl DATE=YYYY-MM-DD`
@@ -18,6 +19,11 @@ Enunciado do desafio: [challenge/README.md](challenge/README.md)
 - Docker Desktop (Docker Compose)
 - Python 3.11+
 - Make (GNU Make)
+
+**Configuracao de ambiente**
+- Copie `.env.sample` para `.env`
+- Ajuste `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_SOURCE_DB`,
+  `POSTGRES_TARGET_DB`, `SOURCE_DATABASE_URL` e `TARGET_DATABASE_URL`
 
 **Seed do banco fonte**
 - `make seed`
