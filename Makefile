@@ -1,27 +1,25 @@
-SHELL := /bin/sh
-
 VENV ?= .venv
 
 PYTHON := python
 PIP := pip
 
 ifeq ($(OS),Windows_NT)
+SHELL := cmd.exe
 VENV_BIN := $(VENV)/Scripts
+VENV_BIN_WIN := $(VENV)\\Scripts
 ifneq ($(wildcard $(VENV_BIN)/python.exe),)
-PYTHON := $(VENV_BIN)/python.exe
-PIP := $(VENV_BIN)/pip.exe
+PYTHON := $(VENV_BIN_WIN)\\python.exe
+PIP := $(VENV_BIN_WIN)\\pip.exe
 else ifneq ($(wildcard venv/Scripts/python.exe),)
 VENV := venv
 VENV_BIN := $(VENV)/Scripts
-PYTHON := $(VENV_BIN)/python.exe
-PIP := $(VENV_BIN)/pip.exe
+VENV_BIN_WIN := $(VENV)\\Scripts
+PYTHON := $(VENV_BIN_WIN)\\python.exe
+PIP := $(VENV_BIN_WIN)\\pip.exe
 endif
-ifneq ($(findstring sh,$(SHELL)),)
-PYTHONPATH_CMD := PYTHONPATH=src
-else
 PYTHONPATH_CMD := set PYTHONPATH=src&&
-endif
 else
+SHELL := /bin/sh
 VENV_BIN := $(VENV)/bin
 ifneq ($(wildcard $(VENV_BIN)/python),)
 PYTHON := $(VENV_BIN)/python
@@ -44,8 +42,8 @@ SEED_ARGS ?=
 setup:
 	python -m venv $(VENV)
 	$(PYTHON) -m pip install -U pip
-	@if [ -f requirements.txt ]; then $(PYTHON) -m pip install -r requirements.txt; fi
-	@if [ -f requirements-dev.txt ]; then $(PYTHON) -m pip install -r requirements-dev.txt; fi
+	$(PYTHON) -m pip install -r requirements.txt
+	$(PYTHON) -m pip install -r requirements-dev.txt
 
 seed:
 	$(PYTHON) scripts/seed_source_db.py $(SEED_ARGS)
@@ -73,7 +71,9 @@ api:
 	$(PYTHONPATH_CMD) $(PYTHON) -m uvicorn source_api.main:application --reload
 
 etl:
-	@if [ -z "$(DATE)" ]; then echo "Usage: make etl DATE=YYYY-MM-DD"; exit 1; fi
+ifeq ($(strip $(DATE)),)
+	$(error Usage: make etl DATE=YYYY-MM-DD)
+endif
 	$(PYTHONPATH_CMD) $(PYTHON) -m etl.run --date $(DATE)
 
 dagster:
